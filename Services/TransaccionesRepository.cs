@@ -80,5 +80,21 @@ namespace ManejoPresupuesto.Services {
                                                                          FechaTransaccion BETWEEN @FechaInicio AND 
                                                                          @FechaFin ", transaccionesPorCuenta);
         }
+
+        /* Busca una transacción por usuario */
+        public async Task<IEnumerable<TransaccionModel>> ObtenerTransaccionByUsuarioID(TransaccionesPorUsuarioModel modelo) {
+            using var connection = new SqlConnection(connectionString);
+
+            return await connection.QueryAsync<TransaccionModel>(@"SELECT T.Id, T.Monto, T.FechaTransaccion, C.Nombre AS Categoria, Q.Nombre AS Cuenta, C.TipoOperacionID 
+                                                                   FROM Transacciones T
+                                                                   INNER JOIN Categorias C
+                                                                   ON C.Id = T.CategoriaID
+                                                                   INNER JOIN Cuentas Q
+                                                                   ON Q.Id = T.CuentaID
+                                                                   WHERE T.UsuarioID = @UsuarioID AND 
+                                                                         FechaTransaccion BETWEEN @FechaInicio AND 
+                                                                         @FechaFin
+                                                                   ORDER BY T.FechaTransaccion DESC", modelo);
+        }
     }
 }

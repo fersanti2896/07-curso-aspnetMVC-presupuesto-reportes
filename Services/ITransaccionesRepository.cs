@@ -7,5 +7,6 @@ namespace ManejoPresupuesto.Services {
         Task Crear(TransaccionModel transaccion);
         Task<IEnumerable<TransaccionModel>> ObtenerTransaccionByCuentaID(TransaccionesPorCuenta transaccionesPorCuenta);
         Task<TransaccionModel> ObtenerTransaccionById(int id, int usuarioID);
+        Task<IEnumerable<TransaccionModel>> ObtenerTransaccionByUsuarioID(TransaccionesPorUsuarioModel modelo);
     }
 }
