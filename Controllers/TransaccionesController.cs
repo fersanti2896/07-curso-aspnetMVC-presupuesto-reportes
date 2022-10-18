@@ -97,7 +97,7 @@ namespace ManejoPresupuesto.Controllers {
 
         /* Crea la vista para actualizar una transacción */
         [HttpGet]
-        public async Task<IActionResult> Editar(int id) {
+        public async Task<IActionResult> Editar(int id, string urlRetorno = null) {
             var usuarioID = usuarioRepository.ObtenerUsuarioID();
             var transaccion = await transaccionesRepository.ObtenerTransaccionById(id, usuarioID);
 
@@ -115,6 +115,7 @@ namespace ManejoPresupuesto.Controllers {
             modelo.CuentaAnteriorID = transaccion.CuentaID;
             modelo.Categorias = await ListadoCategoriasByTipoOperacion(usuarioID, transaccion.TipoOperacionId);
             modelo.Cuentas = await ObtenerCuentas(usuarioID);
+            modelo.urlRetorno = urlRetorno;
 
             return View(modelo);
         }
@@ -151,12 +152,16 @@ namespace ManejoPresupuesto.Controllers {
 
             await transaccionesRepository.ActualizarTransaccion(transaccion, modelo.MontoAnterior, modelo.CuentaAnteriorID);
 
-            return RedirectToAction("Index");
+            if (string.IsNullOrEmpty(modelo.urlRetorno)) {
+                return RedirectToAction("Index");
+            } else {
+                return LocalRedirect(modelo.urlRetorno);
+            }            
         }
 
         /* Elimina una transacción */
         [HttpPost]
-        public async Task<IActionResult> Borrar(int id) {
+        public async Task<IActionResult> Borrar(int id, string urlRetorno = null) {
             var usuarioID = usuarioRepository.ObtenerUsuarioID();
             var transaccion = await transaccionesRepository.ObtenerTransaccionById(id, usuarioID);
 
@@ -166,7 +171,11 @@ namespace ManejoPresupuesto.Controllers {
 
             await transaccionesRepository.BorrarTransaccion(id);
 
-            return RedirectToAction("Index");
+            if (string.IsNullOrEmpty(urlRetorno)) {
+                return RedirectToAction("Index");
+            } else {
+                return LocalRedirect(urlRetorno);
+            }
         }
     }
 }

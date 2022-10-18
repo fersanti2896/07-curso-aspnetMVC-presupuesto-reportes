@@ -5,8 +5,8 @@
 }
 
 <h1>Movimientos @ViewBag.Cuenta</h1>
-
-<h4>
+<br />
+<h4 style="float: right;">
     <a asp-route-mes="@ViewBag.MesAnterior" asp-route-anio="@ViewBag.AnioAnterior" class="btn btn-primary">
         <i class="bi-chevron-left"></i>
     </a>
@@ -23,7 +23,7 @@
             <strong>Depósitos</strong>
         </div>
         <div class="activo">
-            @Model.BalanceDepositos.ToString("N")
+           $ @Model.BalanceDepositos.ToString("N")
         </div>
     </div>
 
@@ -32,7 +32,7 @@
             <strong>Retiros</strong>
         </div>
         <div class="pasivo">
-            @Model.BalanceRetiros.ToString("N")
+           $ @Model.BalanceRetiros.ToString("N")
         </div>
     </div>
 
@@ -41,7 +41,7 @@
             <strong>Total</strong>
         </div>
         <div class="">
-            @Model.Total.ToString("N")
+           $ @Model.Total.ToString("N")
         </div>
     </div>
 </div>
@@ -59,23 +59,26 @@
                             @transacciones.FechaTransaccion.ToString("ddd")
                         </span>
                     </td>
-                    <td class="activo">@transacciones.BalanceDepositos.ToString("N")</td>
-                    <td class="pasivo">@transacciones.BalanceRetiros.ToString("N")</td>
+                    <td class="activo">$@transacciones.BalanceDepositos.ToString("N")</td>
+                    <td class="pasivo">$@transacciones.BalanceRetiros.ToString("N")</td>
                 </tr>
                 @foreach (var tran in transacciones.Transacciones) {
                     <tr style="vertical-align: middle">
                         <td>
-                            <a asp-controller="Transacciones" asp-action="Editar" asp-route-id="@tran.Id">
+                            <a asp-controller="Transacciones" 
+                               asp-action="Editar" 
+                               asp-route-id="@tran.Id"
+                               asp-route-urlRetorno="@ViewBag.urlRetorno">
                                 <i class="bi-pencil"></i>
                             </a>
                         </td>
                         <td>@tran.Categoria</td>
                         <td>@tran.Cuenta</td>
                         <td class="activo">
-                            @(tran.TipoOperacionId == TipoOperacionModel.Ingreso ? tran.Monto.ToString("N") : null)
+                            @(tran.TipoOperacionId == TipoOperacionModel.Ingreso ? "$" + tran.Monto.ToString("N") : null)
                         </td>
                         <td class="pasivo">
-                            @(tran.TipoOperacionId == TipoOperacionModel.Gasto ? tran.Monto.ToString("N") : null)
+                            @(tran.TipoOperacionId == TipoOperacionModel.Gasto ? "$" + tran.Monto.ToString("N") : null)
                         </td>
                     </tr>
                 }

@@ -90,6 +90,7 @@ namespace ManejoPresupuesto.Controllers {
             ViewBag.AnioAnterior = fechaInicio.AddMonths(-1).Year;
             ViewBag.MesPosterior = fechaInicio.AddMonths(1).Month;
             ViewBag.AnioPosterior = fechaInicio.AddMonths(1).Year;
+            ViewBag.urlRetorno = HttpContext.Request.Path + HttpContext.Request.QueryString;
 
             return View(modelo);
         }
