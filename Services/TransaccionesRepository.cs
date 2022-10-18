@@ -64,5 +64,21 @@ namespace ManejoPresupuesto.Services {
                                            new { id }, 
                                            commandType: System.Data.CommandType.StoredProcedure);
         }
+
+        /* Busca una transacción por cuenta */
+        public async Task<IEnumerable<TransaccionModel>> ObtenerTransaccionByCuentaID(TransaccionesPorCuenta transaccionesPorCuenta) {
+            using var connection = new SqlConnection(connectionString);
+
+            return await connection.QueryAsync<TransaccionModel>(@"SELECT T.Id, T.Monto, T.FechaTransaccion, C.Nombre AS Categoria, Q.Nombre AS Cuenta, C.TipoOperacionID 
+                                                                   FROM Transacciones T
+                                                                   INNER JOIN Categorias C
+                                                                   ON C.Id = T.CategoriaID
+                                                                   INNER JOIN Cuentas Q
+                                                                   ON Q.Id = T.CuentaID
+                                                                   WHERE T.CuentaID = @CuentaID AND 
+                                                                         T.UsuarioID = @UsuarioID AND 
+                                                                         FechaTransaccion BETWEEN @FechaInicio AND 
+                                                                         @FechaFin ", transaccionesPorCuenta);
+        }
     }
 }

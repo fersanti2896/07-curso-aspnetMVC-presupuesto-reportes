@@ -5,6 +5,7 @@ namespace ManejoPresupuesto.Services {
         Task ActualizarTransaccion(TransaccionModel transaccion, decimal montoAnterior, int cuentaAnterior);
         Task BorrarTransaccion(int id);
         Task Crear(TransaccionModel transaccion);
+        Task<IEnumerable<TransaccionModel>> ObtenerTransaccionByCuentaID(TransaccionesPorCuenta transaccionesPorCuenta);
         Task<TransaccionModel> ObtenerTransaccionById(int id, int usuarioID);
     }
 }
