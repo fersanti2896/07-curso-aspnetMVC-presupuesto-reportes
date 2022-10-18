@@ -11,6 +11,8 @@ builder.Services.AddTransient<IUsuarioRepository, UsuarioRepository>();
 builder.Services.AddTransient<ICuentasRepository, CuentasRepository>();
 builder.Services.AddTransient<ICategoriasRepository, CategoriasRepository>();
 builder.Services.AddTransient<ITransaccionesRepository, TransaccionesRepository>();
+builder.Services.AddHttpContextAccessor();
+builder.Services.AddTransient<IReportesRepository, ReportesRepository>();
 
 /* Configuracion de AutoMapper */
 builder.Services.AddAutoMapper(typeof(Program));
