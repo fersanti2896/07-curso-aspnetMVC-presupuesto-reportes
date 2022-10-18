@@ -184,5 +184,25 @@ namespace ManejoPresupuesto.Controllers {
                 return LocalRedirect(urlRetorno);
             }
         }
+
+        /* Reporte Semanal */
+        public IActionResult Semanal() {
+            return View();
+        }
+
+        /* Reporte Mensual */
+        public IActionResult Mensual() {
+            return View();
+        }
+
+        /* Reporte Excel */
+        public IActionResult Excel() {
+            return View();
+        }
+
+        /* Reporte Calendario */
+        public IActionResult Calendario() {
+            return View();
+        }
     }
 }
