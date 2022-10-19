@@ -96,5 +96,20 @@ namespace ManejoPresupuesto.Services {
                                                                          @FechaFin
                                                                    ORDER BY T.FechaTransaccion DESC", modelo);
         }
+
+        /*  -------------- REPORTES ------------ */
+        /* Reporte por Semana */
+        public async Task<IEnumerable<ResultadoPorSemana>> ObtenerBySemana(TransaccionesPorUsuarioModel modelo) {
+            using var connection = new SqlConnection(connectionString);
+
+            return await connection.QueryAsync<ResultadoPorSemana>(@"SELECT DATEDIFF(d, @FechaInicio, FechaTransaccion) / 7 + 1 AS Semana,
+                                                                     SUM(Monto) AS Monto, Cat.TipoOperacionID
+                                                                     FROM Transacciones T
+                                                                     INNER JOIN Categorias Cat
+                                                                     ON Cat.Id = T.CategoriaID
+                                                                     WHERE T.UsuarioID = @UsuarioID AND FechaTransaccion BETWEEN @FechaInicio AND @FechaFin
+                                                                     GROUP BY DATEDIFF(d, @FechaInicio, FechaTransaccion) / 7, Cat.TipoOperacionID",
+                                                                    modelo);
+        }
     }
 }

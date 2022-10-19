@@ -89,5 +89,21 @@ namespace ManejoPresupuesto.Services {
 
             return modelo;
         }
+
+        /* Obtiene el reporte de transacciones por semana */
+        public async Task<IEnumerable<ResultadoPorSemana>> ObtenerReporteSemanal(int usuarioID, int mes, int anio, dynamic ViewBag) {
+            (DateTime fechaInicio, DateTime fechaFin) = GenerarFecha(mes, anio);
+
+            var parametro = new TransaccionesPorUsuarioModel() {
+                UsuarioID = usuarioID,
+                FechaInicio = fechaInicio,
+                FechaFin = fechaFin
+            };
+
+            AsignarValoresViewBag(ViewBag, fechaInicio);
+            var modelo = await transaccionesRepository.ObtenerBySemana(parametro);
+
+            return modelo;
+        }
     }
 }

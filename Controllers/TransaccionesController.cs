@@ -186,8 +186,58 @@ namespace ManejoPresupuesto.Controllers {
         }
 
         /* Reporte Semanal */
-        public IActionResult Semanal() {
-            return View();
+        public async Task<IActionResult> Semanal(int mes, int anio) {
+            var usuarioID = usuarioRepository.ObtenerUsuarioID();
+            IEnumerable<ResultadoPorSemana> transaccionesSemana = await reportesRepository.ObtenerReporteSemanal(usuarioID, mes, anio, ViewBag);
+
+            /* Algoritmo */
+            var agrupado = transaccionesSemana.GroupBy(x => x.Semana)
+                                              .Select(x => new ResultadoPorSemana() {
+                                                  Semana = x.Key,
+                                                  Ingresos = x.Where(x => x.TipoOperacionID == TipoOperacionModel.Ingreso)
+                                                              .Select(x => x.Monto)
+                                                              .FirstOrDefault(),
+                                                  Gastos = x.Where(x => x.TipoOperacionID == TipoOperacionModel.Gasto)
+                                                              .Select(x => x.Monto)
+                                                              .FirstOrDefault()
+                                              })
+                                              .ToList();
+
+            if (anio == 0 || mes == 0) {
+                var hoy = DateTime.Today;
+                anio = hoy.Year;
+                mes = hoy.Month;
+            }
+
+            var fechaReferencia = new DateTime(anio, mes, 1);
+            var diasMes = Enumerable.Range(1, fechaReferencia.AddMonths(1).AddDays(-1).Day);
+            var diasSegmentado = diasMes.Chunk(7).ToList();
+
+            for (int i = 0; i < diasSegmentado.Count(); i++) {
+                var semana = i + 1;
+                var fechaInicio = new DateTime(anio, mes, diasSegmentado[i].First());
+                var fechaFin = new DateTime(anio, mes, diasSegmentado[i].Last());
+                var grupoSemana = agrupado.FirstOrDefault(x => x.Semana == semana);
+
+                if (grupoSemana is null) {
+                    agrupado.Add(new ResultadoPorSemana() { 
+                        Semana = semana,
+                        FechaInicio = fechaInicio,
+                        FechaFin = fechaFin
+                    });
+                } else {
+                    grupoSemana.FechaInicio = fechaInicio;
+                    grupoSemana.FechaFin = fechaFin;
+                }
+            }
+
+            agrupado = agrupado.OrderByDescending(x => x.Semana).ToList();
+
+            var modelo = new ReporteSemanalModel();
+            modelo.TransaccionesPorSemana = agrupado;
+            modelo.FechaReferencia = fechaReferencia;
+
+            return View(modelo);
         }
 
         /* Reporte Mensual */
