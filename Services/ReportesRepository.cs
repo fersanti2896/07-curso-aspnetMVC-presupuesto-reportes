@@ -105,5 +105,7 @@ namespace ManejoPresupuesto.Services {
 
             return modelo;
         }
+
+        /* Obtiene el reporte de transacciones mensualmente */
     }
 }

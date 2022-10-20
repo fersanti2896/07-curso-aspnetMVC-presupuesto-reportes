@@ -111,5 +111,18 @@ namespace ManejoPresupuesto.Services {
                                                                      GROUP BY DATEDIFF(d, @FechaInicio, FechaTransaccion) / 7, Cat.TipoOperacionID",
                                                                     modelo);
         }
+
+        /* Reporte por Mes */
+        public async Task<IEnumerable<ResultadoPorMes>> ObtenerByMes(int usuarioID, int anio) {
+            using var connection = new SqlConnection(connectionString);
+
+            return await connection.QueryAsync<ResultadoPorMes>(@"SELECT MONTH(T.FechaTransaccion) AS Mes, SUM(T.Monto) AS Monto, Cat.TipoOperacionID
+                                                                  FROM Transacciones T
+                                                                  INNER JOIN Categorias Cat
+                                                                  ON Cat.Id = T.CategoriaID
+                                                                  WHERE T.UsuarioID = @UsuarioID AND YEAR(T.FechaTransaccion) = @Anio
+                                                                  GROUP BY MONTH(T.FechaTransaccion), Cat.TipoOperacionID",
+                                                                  new { usuarioID, anio });
+        }
     }
 }
