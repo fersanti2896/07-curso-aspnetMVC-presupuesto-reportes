@@ -1,8 +1,10 @@
 ﻿using AutoMapper;
+using ClosedXML.Excel;
 using ManejoPresupuesto.Models;
 using ManejoPresupuesto.Services;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
+using System.Data;
 
 namespace ManejoPresupuesto.Controllers {
     public class TransaccionesController : Controller {
@@ -281,6 +283,56 @@ namespace ManejoPresupuesto.Controllers {
             modelo.TransaccionesMes = transaccionesAgrupadas;
 
             return View(modelo);
+        }
+
+        /* Genera el Excel */
+        private FileResult GenerarExcel(string nombreArchivo, IEnumerable<TransaccionModel> transacciones) {
+            DataTable dataTable = new DataTable("Transacciones");
+            dataTable.Columns.AddRange(new DataColumn[] {
+                new DataColumn("Fecha"),
+                new DataColumn("Cuenta"),
+                new DataColumn("Categoria"),
+                new DataColumn("Nota"),
+                new DataColumn("Monto"),
+                new DataColumn("Ingreso/Gasto"),
+            });
+
+            foreach (var transaccion in transacciones) {
+                dataTable.Rows.Add(transaccion.FechaTransaccion,
+                                   transaccion.Cuenta,
+                                   transaccion.Categoria,
+                                   transaccion.Nota,
+                                   transaccion.Monto,
+                                   transaccion.TipoOperacionId
+                                   );
+            }
+
+            using (XLWorkbook wb = new XLWorkbook()) {
+                wb.Worksheets.Add(dataTable);
+                
+                using (MemoryStream stream = new MemoryStream()) {
+                    wb.SaveAs(stream);
+
+                    return File(stream.ToArray(), "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", nombreArchivo);
+                } 
+            }
+        }
+
+        /* Exportar el Excel */
+        [HttpGet]
+        public async Task<FileResult> ExportarExcelMes(int mes, int anio) {
+            var fechaInicio = new DateTime(anio, mes, 1);
+            var fecharFin = fechaInicio.AddMonths(1).AddDays(-1);
+            var usuarioID = usuarioRepository.ObtenerUsuarioID();
+            var transacciones = await transaccionesRepository.ObtenerTransaccionByUsuarioID(new TransaccionesPorUsuarioModel {
+                UsuarioID = usuarioID,
+                FechaInicio = fechaInicio,
+                FechaFin = fecharFin
+            });
+            var nombreArchivo = $"Manejo Presupuesto - { fechaInicio.ToString("MMMM yyyy") }.xlsx";
+
+            /* Genera el excel */
+            return GenerarExcel(nombreArchivo, transacciones);
         }
 
         /* Reporte Excel */
