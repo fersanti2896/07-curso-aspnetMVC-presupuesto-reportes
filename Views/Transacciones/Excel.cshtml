@@ -5,9 +5,10 @@
     var fechaHoy = DateTime.Today;
     var haceunMes = fechaHoy.AddMonths(-1);
     var mesAnterior = haceunMes.Month;
-    var anioAnterior = haceunMes.Year;
+    var anioAnteriorAnio = haceunMes.Year;
     var mesActual = fechaHoy.Month;
     var anioActual = fechaHoy.Year;
+    var anioAnterior = anioActual - 1;
 }
 
 <h1>Transacciones
@@ -32,34 +33,30 @@
 <div class="mb-3">
     <a asp-action="ExportarExcelMes" 
        asp-route-mes="@mesAnterior" 
-       asp-route-anio="@anioAnterior"
+       asp-route-anio="@anioAnteriorAnio"
        class="btn btn-success">
        Exportar Mes Anterior
    </a> ~ @haceunMes.ToString("MMMM yyyy")
 </div>
 
 <div class="mb-3">
-    <a asp-action="ExportarExcelMes" 
-       asp-route-mes="@mesActual" 
+    <a asp-action="ExportarExcelAnio"
        asp-route-anio="@anioActual"
        class="btn btn-success">
        Exportar Año Actual
-   </a> ~ @fechaHoy.ToString("MMMM yyyy")
+   </a> ~ @anioActual
 </div>
 
 <div class="mb-3">
-    <a asp-action="ExportarExcelMes" 
-       asp-route-mes="@mesActual" 
-       asp-route-anio="@anioActual"
+    <a asp-action="ExportarExcelAnio" 
+       asp-route-anio="@anioAnterior"
        class="btn btn-success">
        Exportar Año Anterior
-   </a> ~ @fechaHoy.ToString("MMMM yyyy")
+   </a> ~ @anioAnterior
 </div>
 
 <div class="mb-3">
-    <a asp-action="ExportarExcelMes" 
-       asp-route-mes="@mesActual" 
-       asp-route-anio="@anioActual"
+    <a asp-action="ExportarExcelTodo"
        class="btn btn-success">
        Exportar Todo
    </a>

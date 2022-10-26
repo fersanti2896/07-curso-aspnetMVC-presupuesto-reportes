@@ -318,7 +318,7 @@ namespace ManejoPresupuesto.Controllers {
             }
         }
 
-        /* Exportar el Excel */
+        /* Exportar Excel por Mes */
         [HttpGet]
         public async Task<FileResult> ExportarExcelMes(int mes, int anio) {
             var fechaInicio = new DateTime(anio, mes, 1);
@@ -330,6 +330,44 @@ namespace ManejoPresupuesto.Controllers {
                 FechaFin = fecharFin
             });
             var nombreArchivo = $"Manejo Presupuesto - { fechaInicio.ToString("MMMM yyyy") }.xlsx";
+
+            /* Genera el excel */
+            return GenerarExcel(nombreArchivo, transacciones);
+        }
+
+        /* Exportar Excel por Año */
+        [HttpGet]
+        public async Task<FileResult> ExportarExcelAnio(int anio) {
+            var fechaInicio = new DateTime(anio, 1, 1);
+            var fechaFin = fechaInicio.AddYears(1).AddDays(-1);
+            var usuarioID = usuarioRepository.ObtenerUsuarioID();
+
+            var transacciones = await transaccionesRepository.ObtenerTransaccionByUsuarioID(new TransaccionesPorUsuarioModel {
+                UsuarioID = usuarioID,
+                FechaInicio = fechaInicio,
+                FechaFin = fechaFin
+            });
+
+            var nombreArchivo = $"Manejo Presupuesto - { fechaInicio.ToString("yyyy") }.xlsx";
+
+            /* Genera el excel */
+            return GenerarExcel(nombreArchivo, transacciones);
+        }
+
+        /* Exportar Excel General */
+        [HttpGet]
+        public async Task<FileResult> ExportarExcelTodo() {
+            var fechaInicio = DateTime.Today.AddYears(-100);
+            var fechaFin = DateTime.Today.AddYears(1000);
+            var usuarioID = usuarioRepository.ObtenerUsuarioID();
+
+            var transacciones = await transaccionesRepository.ObtenerTransaccionByUsuarioID(new TransaccionesPorUsuarioModel {
+                UsuarioID = usuarioID,
+                FechaInicio = fechaInicio,
+                FechaFin = fechaFin
+            });
+
+            var nombreArchivo = $"Manejo Presupuesto - { DateTime.Today.ToString("dd-MM-yyyy") }.xlsx";
 
             /* Genera el excel */
             return GenerarExcel(nombreArchivo, transacciones);
